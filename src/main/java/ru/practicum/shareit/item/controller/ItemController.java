@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
-import java.util.Optional;
 
-/**
- * TODO Sprint add-controllers.
- */
+import static ru.practicum.shareit.util.Constants.USER_ID_HEADER;
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -31,37 +31,37 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    Optional<ItemDto> createItem(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestBody @Valid ItemDto item
+    ItemResponseDto createItem(
+            @RequestHeader(USER_ID_HEADER) Long userId,
+            @RequestBody @Valid ItemCreateDto item
     ) {
         return itemService.createItem(userId, item);
     }
 
     @PatchMapping("/{itemId}")
-    Optional<ItemDto> updateItem(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+    ItemResponseDto updateItem(
+            @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long itemId,
-            @RequestBody ItemDto item
+            @RequestBody @Valid ItemUpdateDto item
     ) {
         return itemService.updateItem(userId, itemId, item);
     }
 
     @GetMapping("/{itemId}")
-    Optional<ItemDto> getItemById(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+    ItemResponseDto getItemById(
+            @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long itemId
     ) {
         return itemService.getItem(userId, itemId);
     }
 
     @GetMapping
-    Collection<ItemDto> getAllItemsFromUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    Collection<ItemResponseDto> getAllItemsFromUser(@RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.getAllItemsFromUser(userId);
     }
 
     @GetMapping("/search")
-    Collection<ItemDto> searchItems(@RequestParam String text) {
+    Collection<ItemResponseDto> searchItems(@RequestParam String text) {
         return itemService.getAllItemsWithSearch(text);
     }
 

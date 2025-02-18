@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.InternalServerException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemStorage;
@@ -29,32 +31,35 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
 
     @Override
-    public Optional<ItemDto> createItem(Long userId, ItemDto item) {
-        final User owner = UserMapper.toUser(userService.getUser(userId).get());
+    public ItemResponseDto createItem(Long userId, ItemCreateDto item) {
+        final User owner = UserMapper.toUser(userService.getUser(userId));
         final Item newItem = Item.builder()
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(owner)
                 .build();
-        final Optional<Item> addedItem = itemStorage.addNewItem(newItem);
-        if (addedItem.isEmpty()) {
+        final Item addedItem = itemStorage.addNewItem(newItem);
+        if (addedItem == null) {
             final String errorMessage = String.format("Couldn't add an item: %s", newItem);
             log.error(errorMessage);
             throw new InternalServerException(errorMessage);
         }
-        return Optional.of(ItemMapper.toItemDto(addedItem.get()));
+        return ItemMapper.toItemDto(addedItem);
     }
 
     @Override
-    public Optional<ItemDto> updateItem(Long userId, Long itemId, ItemDto itemData) {
-        final User owner = UserMapper.toUser(userService.getUser(userId).get());
-        final Item currentItem = ItemMapper.toItem(getItem(userId, itemId).get());
+    public ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto itemData) {
+        final User owner = UserMapper.toUser(userService.getUser(userId));
+        final Item currentItem = ItemMapper.toItem(getItem(userId, itemId));
         final Item updatedItem = Item.builder()
                 .id(itemId)
-                .name(itemData.getName() == null ? currentItem.getName() : itemData.getName())
-                .description(itemData.getDescription() == null ? currentItem.getDescription() : itemData.getDescription())
-                .available(itemData.getAvailable() == null ? currentItem.getAvailable() : itemData.getAvailable())
+                .name(itemData.getName() == null || itemData.getName().isEmpty() ? currentItem.getName()
+                        : itemData.getName())
+                .description(itemData.getDescription() == null || itemData.getDescription().isEmpty() ? currentItem.getDescription()
+                        : itemData.getDescription())
+                .available(itemData.getAvailable() == null ? currentItem.getAvailable()
+                        : itemData.getAvailable())
                 .owner(owner)
                 .build();
         itemStorage.updateItem(updatedItem);
@@ -62,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<ItemDto> getItem(Long ownerId, Long itemId) {
+    public ItemResponseDto getItem(Long ownerId, Long itemId) {
         userService.getUser(ownerId);
         final Optional<Item> currentItem = itemStorage.getItemById(itemId);
         if (currentItem.isEmpty()) {
@@ -70,11 +75,11 @@ public class ItemServiceImpl implements ItemService {
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
         }
-        return Optional.of(ItemMapper.toItemDto(currentItem.get()));
+        return ItemMapper.toItemDto(currentItem.get());
     }
 
     @Override
-    public Collection<ItemDto> getAllItemsFromUser(Long userId) {
+    public Collection<ItemResponseDto> getAllItemsFromUser(Long userId) {
         return itemStorage.getAllItems().stream()
                 .filter(item -> item.getOwner().getId().equals(userId))
                 .map(ItemMapper::toItemDto)
@@ -82,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> getAllItemsWithSearch(String text) {
+    public Collection<ItemResponseDto> getAllItemsWithSearch(String text) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface ItemStorage {
-    Optional<Item> addNewItem(Item item);
+    Item addNewItem(Item item);
 
     Optional<Item> getItemById(Long itemId);
 

@@ -5,12 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Getter
 @Builder
-public class ItemDto {
+public class ItemResponseDto {
+    @NotNull
     private Long id;
     @NotBlank
     private String name;

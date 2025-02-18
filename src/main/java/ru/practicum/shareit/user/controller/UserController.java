@@ -12,14 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserCreateDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.util.Optional;
-
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
@@ -28,18 +25,18 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    Optional<UserDto> getUser(@PathVariable Long userId) {
+    UserResponseDto getUser(@PathVariable Long userId) {
         return userService.getUser(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    Optional<UserDto> createUser(@Valid @RequestBody UserDto user) {
+    UserResponseDto createUser(@Valid @RequestBody UserCreateDto user) {
         return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    Optional<UserDto> updateUser(@PathVariable Long userId, @RequestBody UserDto user) {
+    UserResponseDto updateUser(@PathVariable Long userId, @Valid @RequestBody UserUpdateDto user) {
         return userService.updateUser(userId, user);
     }
 

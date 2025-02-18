@@ -2,22 +2,22 @@ package ru.practicum.shareit.user.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.model.User;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
 
-    public static User toUser(UserDto userDto) {
+    public static User toUser(UserResponseDto userResponseDto) {
         return User.builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
+                .id(userResponseDto.getId())
+                .name(userResponseDto.getName())
+                .email(userResponseDto.getEmail())
                 .build();
     }
 
-    public static UserDto toUserDto(User user) {
-        return UserDto.builder()
+    public static UserResponseDto toUserDto(User user) {
+        return UserResponseDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())

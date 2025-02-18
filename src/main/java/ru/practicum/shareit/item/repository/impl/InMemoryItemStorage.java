@@ -18,18 +18,11 @@ public class InMemoryItemStorage implements ItemStorage {
     private long generatorId = 0;
 
     @Override
-    public Optional<Item> addNewItem(Item item) {
-        final Long itemId = ++generatorId;
-        final Item newItem = Item.builder()
-                .id(itemId)
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .owner(item.getOwner())
-                .build();
-        items.put(itemId, newItem);
-        log.info("A new item has been added: {}.", newItem);
-        return getItemById(itemId);
+    public Item addNewItem(Item item) {
+        item.setId(++generatorId);
+        items.put(item.getId(), item);
+        log.info("A new item has been added: {}.", item);
+        return item;
     }
 
     @Override

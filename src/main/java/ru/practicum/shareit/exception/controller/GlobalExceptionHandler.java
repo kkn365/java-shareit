@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.DataDuplicaionException;
+import ru.practicum.shareit.exception.DataAlreadyExistException;
 import ru.practicum.shareit.exception.InternalServerException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDataDuplicationException(final DataDuplicaionException e) {
+    public ErrorResponse handleDataAlreadyExistException(final DataAlreadyExistException e) {
         log.error(e.getMessage(), e.getLocalizedMessage());
         return new ErrorResponse("The data must be unique.", e.getMessage());
     }
