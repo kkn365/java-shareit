@@ -6,9 +6,9 @@ import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ItemMapper {
+public class ItemResponseMapper {
 
-    public static ItemResponseDto toItemDto(Item item) {
+    public static ItemResponseDto toItemResponseDto(Item item) {
         return ItemResponseDto.builder()
                 .id(item.getId())
                 .name(item.getName())

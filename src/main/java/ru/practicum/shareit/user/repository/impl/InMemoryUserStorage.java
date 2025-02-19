@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.repository.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.DataAlreadyExistException;
-import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserStorage;
 
@@ -18,11 +17,11 @@ import java.util.Set;
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Long, User> users = new LinkedHashMap<>();
-    final Set<String> emailUniqueSet = new HashSet<>();
+    private final Set<String> emailUniqueSet = new HashSet<>();
     private long generatorId = 0;
 
     @Override
-    public User addNewUser(UserCreateDto user) {
+    public User addNewUser(User user) {
         final String email = user.getEmail();
         if (emailUniqueSet.contains(email)) {
             final String message = String.format("Email: %s already exists.", email);
@@ -30,15 +29,11 @@ public class InMemoryUserStorage implements UserStorage {
             throw new DataAlreadyExistException(message);
         }
         final Long userId = ++generatorId;
-        final User newUser = User.builder()
-                .id(userId)
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-        users.put(userId, newUser);
+        user.setId(userId);
+        users.put(userId, user);
         emailUniqueSet.add(email);
-        log.info("A new user has been added: {}.", newUser);
-        return newUser;
+        log.info("A new user has been added: {}.", user);
+        return user;
     }
 
     @Override

@@ -9,11 +9,11 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.mapper.ItemResponseMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemStorage;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.mapper.UserResponseMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponseDto createItem(Long userId, ItemCreateDto item) {
-        final User owner = UserMapper.toUser(userService.getUser(userId));
+        final User owner = UserResponseMapper.toUser(userService.getUser(userId));
         final Item newItem = Item.builder()
                 .name(item.getName())
                 .description(item.getDescription())
@@ -45,19 +45,21 @@ public class ItemServiceImpl implements ItemService {
             log.error(errorMessage);
             throw new InternalServerException(errorMessage);
         }
-        return ItemMapper.toItemDto(addedItem);
+        return ItemResponseMapper.toItemResponseDto(addedItem);
     }
 
     @Override
     public ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto itemData) {
-        final User owner = UserMapper.toUser(userService.getUser(userId));
-        final Item currentItem = ItemMapper.toItem(getItem(userId, itemId));
+        final User owner = UserResponseMapper.toUser(userService.getUser(userId));
+        final Item currentItem = ItemResponseMapper.toItem(getItem(userId, itemId));
+        final String incomingItemName = itemData.getName();
+        final String currentItemName = currentItem.getName();
+        final String incomingItemDesc = itemData.getDescription();
+        final String currentItemDesc = currentItem.getDescription();
         final Item updatedItem = Item.builder()
                 .id(itemId)
-                .name(itemData.getName() == null || itemData.getName().isEmpty() ? currentItem.getName()
-                        : itemData.getName())
-                .description(itemData.getDescription() == null || itemData.getDescription().isEmpty() ? currentItem.getDescription()
-                        : itemData.getDescription())
+                .name(incomingItemName == null || incomingItemName.isEmpty() ? currentItemName : incomingItemName)
+                .description(incomingItemDesc == null || incomingItemDesc.isEmpty() ? currentItemDesc : incomingItemDesc)
                 .available(itemData.getAvailable() == null ? currentItem.getAvailable()
                         : itemData.getAvailable())
                 .owner(owner)
@@ -75,14 +77,14 @@ public class ItemServiceImpl implements ItemService {
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
         }
-        return ItemMapper.toItemDto(currentItem.get());
+        return ItemResponseMapper.toItemResponseDto(currentItem.get());
     }
 
     @Override
     public Collection<ItemResponseDto> getAllItemsFromUser(Long userId) {
         return itemStorage.getAllItems().stream()
                 .filter(item -> item.getOwner().getId().equals(userId))
-                .map(ItemMapper::toItemDto)
+                .map(ItemResponseMapper::toItemResponseDto)
                 .toList();
     }
 
@@ -103,7 +105,7 @@ public class ItemServiceImpl implements ItemService {
                     }
                     return false;
                 })
-                .map(ItemMapper::toItemDto)
+                .map(ItemResponseMapper::toItemResponseDto)
                 .toList();
     }
 }

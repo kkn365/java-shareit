@@ -8,7 +8,8 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.mapper.UserCreateMapper;
+import ru.practicum.shareit.user.mapper.UserResponseMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserStorage;
 import ru.practicum.shareit.user.service.UserService;
@@ -24,8 +25,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(UserCreateDto userCreateDto) {
-        final User newUser = userStorage.addNewUser(userCreateDto);
-        return UserMapper.toUserDto(newUser);
+        final User newUser = userStorage.addNewUser(UserCreateMapper.toUser(userCreateDto));
+        return UserResponseMapper.toUserResponseDto(newUser);
     }
 
     @Override
@@ -36,17 +37,20 @@ public class UserServiceImpl implements UserService {
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
         }
-        return UserMapper.toUserDto(currentUser.get());
+        return UserResponseMapper.toUserResponseDto(currentUser.get());
     }
 
     @Override
     public UserResponseDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
         final UserResponseDto currentUser = getUser(userId);
+        final String incomingUserName = userUpdateDto.getName();
+        final String incomingUserEmail = userUpdateDto.getEmail();
+        final String currentUserName = currentUser.getName();
+        final String currentUserEmail = currentUser.getEmail();
         final User updatedUser = User.builder()
                 .id(userId)
-                .name(userUpdateDto.getName() == null || userUpdateDto.getName().isEmpty() ? currentUser.getName()
-                        : userUpdateDto.getName())
-                .email(userUpdateDto.getEmail() == null ? currentUser.getEmail() : userUpdateDto.getEmail())
+                .name(incomingUserName == null || incomingUserName.isEmpty() ? currentUserName : incomingUserName)
+                .email(incomingUserEmail == null ? currentUserEmail : incomingUserEmail)
                 .build();
         userStorage.updateUser(updatedUser);
         return getUser(userId);
