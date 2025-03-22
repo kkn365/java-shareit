@@ -4,6 +4,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.mapper.UserResponseMapper;
+
+import java.util.Collections;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemResponseMapper {
@@ -14,6 +18,12 @@ public class ItemResponseMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .owner(UserResponseMapper.toUserResponseDto(item.getOwner()))
+                .comments(Optional.ofNullable(item.getComments())
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(CommentResponseMapper::toCommentResponseDto)
+                        .toList())
                 .build();
     }
 
@@ -23,6 +33,7 @@ public class ItemResponseMapper {
                 .name(itemResponseDto.getName())
                 .description(itemResponseDto.getDescription())
                 .available(itemResponseDto.getAvailable())
+                .owner(UserResponseMapper.toUser(itemResponseDto.getOwner()))
                 .build();
     }
 }

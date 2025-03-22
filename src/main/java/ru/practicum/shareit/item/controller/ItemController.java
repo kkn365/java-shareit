@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentCreateDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
@@ -65,4 +67,13 @@ public class ItemController {
         return itemService.getAllItemsWithSearch(text);
     }
 
+    @PostMapping("{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    CommentResponseDto createComment(
+            @RequestHeader(USER_ID_HEADER) Long userId,
+            @PathVariable @Valid Long itemId,
+            @RequestBody @Valid CommentCreateDto commentDto
+    ) {
+        return itemService.createComment(userId, itemId, commentDto);
+    }
 }
