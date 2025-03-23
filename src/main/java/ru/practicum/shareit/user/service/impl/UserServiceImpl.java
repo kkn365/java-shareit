@@ -21,7 +21,7 @@ import java.util.Optional;
 @Slf4j
 @Service("userService")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Transactional(readOnly = true)
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;

@@ -33,7 +33,7 @@ import java.util.Optional;
 @Slf4j
 @Service("bookingService")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Transactional(readOnly = true)
+@Transactional
 public class BookingServiceImpl implements BookingService {
 
     private final BookingStorage bookingStorage;

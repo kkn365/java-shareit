@@ -34,7 +34,7 @@ import java.util.Optional;
 @Slf4j
 @Service("itemService")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Transactional(readOnly = true)
+@Transactional
 public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
