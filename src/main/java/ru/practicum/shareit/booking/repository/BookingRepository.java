@@ -8,7 +8,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
-public interface BookingStorage extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 AND (b.status = ?2 AND b.start <= ?3 AND b.end >= ?3 )")
     Collection<Booking> findCurrentByOwnerId(Long ownerId, BookingStatus status, LocalDateTime localDateTime);

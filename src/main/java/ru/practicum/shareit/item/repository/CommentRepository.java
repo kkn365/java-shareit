@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface CommentStorage extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
     Collection<Comment> findAllByItemId(Long itemId);
 
     Collection<Comment> findAllByItemIdIn(List<Long> itemsIds);

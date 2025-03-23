@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
@@ -31,12 +31,13 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    BookingResponseDto createBook(
+    ResponseEntity<BookingResponseDto> createBook(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @RequestBody @Valid BookingCreateDto book
     ) {
-        return bookingService.createBook(userId, book);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(bookingService.createBook(userId, book));
     }
 
     @PatchMapping("/{bookingId}")
@@ -64,7 +65,7 @@ public class BookingController {
         return bookingService.getItemsBookingsListForCurrentUser(userId, state);
     }
 
-    @GetMapping()
+    @GetMapping
     Collection<BookingResponseDto> getBookingsListForCurrentUser(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @RequestParam(required = false, defaultValue = DEFAULT_SEARCH_VALUE) BookingState state

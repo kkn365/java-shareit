@@ -1,20 +1,13 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.RequiredArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.model.Comment;
 
-@RequiredArgsConstructor
-public class CommentResponseMapper {
-
-    public static CommentResponseDto toCommentResponseDto(Comment comment) {
-        return CommentResponseDto.builder()
-                .id(comment.getId())
-                .text(comment.getText())
-                .itemId(comment.getItem().getId())
-                .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
-                .build();
-    }
-
+@Mapper(componentModel = "spring")
+public interface CommentResponseMapper {
+    @Mapping(target = "authorName", source = "comment.author.name")
+    @Mapping(target = "itemId", source = "comment.item.id")
+    CommentResponseDto toCommentResponseDto(Comment comment);
 }

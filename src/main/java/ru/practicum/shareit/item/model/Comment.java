@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Entity
 @Table(name = "comments", schema = "public")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Comment {
 
     @Id

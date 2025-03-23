@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,9 +31,10 @@ public class UserController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    UserResponseDto createUser(@Valid @RequestBody UserCreateDto user) {
-        return userService.createUser(user);
+    ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserCreateDto user) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userService.createUser(user));
     }
 
     @PatchMapping("/{userId}")

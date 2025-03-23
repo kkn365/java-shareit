@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
 
-public interface ItemStorage extends JpaRepository<Item, Long> {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("SELECT it FROM Item it WHERE it.owner.id = ?1 ")
     Collection<Item> findByOwnerId(Long userId);
