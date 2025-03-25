@@ -1,26 +1,15 @@
 package ru.practicum.shareit.user.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.model.User;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserCreateMapper {
+@Mapper(componentModel = "spring")
+public interface UserCreateMapper {
 
-    public static User toUser(UserCreateDto userCreateDto) {
-        return User.builder()
-                .id(null)
-                .name(userCreateDto.getName())
-                .email(userCreateDto.getEmail())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    User toUser(UserCreateDto userCreateDto);
 
-    public static UserCreateDto toUserCreateDto(User user) {
-        return UserCreateDto.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-    }
-
+    UserCreateDto toUserCreateDto(User user);
 }

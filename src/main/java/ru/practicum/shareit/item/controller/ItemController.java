@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentCreateDto;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
@@ -30,12 +32,13 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    ItemResponseDto createItem(
+    ResponseEntity<ItemResponseDto> createItem(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @RequestBody @Valid ItemCreateDto item
     ) {
-        return itemService.createItem(userId, item);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(itemService.createItem(userId, item));
     }
 
     @PatchMapping("/{itemId}")
@@ -65,4 +68,14 @@ public class ItemController {
         return itemService.getAllItemsWithSearch(text);
     }
 
+    @PostMapping("{itemId}/comment")
+    ResponseEntity<CommentResponseDto> createComment(
+            @RequestHeader(USER_ID_HEADER) Long userId,
+            @PathVariable @Valid Long itemId,
+            @RequestBody @Valid CommentCreateDto commentDto
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(itemService.createComment(userId, itemId, commentDto));
+    }
 }

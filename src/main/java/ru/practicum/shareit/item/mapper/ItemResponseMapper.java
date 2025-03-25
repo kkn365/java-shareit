@@ -1,28 +1,16 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ItemResponseMapper {
+@Mapper(componentModel = "spring")
+public interface ItemResponseMapper {
 
-    public static ItemResponseDto toItemResponseDto(Item item) {
-        return ItemResponseDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .build();
-    }
+    @Mapping(target = "lastBooking", ignore = true)
+    @Mapping(target = "nextBooking", ignore = true)
+    ItemResponseDto toItemResponseDto(Item item);
 
-    public static Item toItem(ItemResponseDto itemResponseDto) {
-        return Item.builder()
-                .id(itemResponseDto.getId())
-                .name(itemResponseDto.getName())
-                .description(itemResponseDto.getDescription())
-                .available(itemResponseDto.getAvailable())
-                .build();
-    }
+    Item toItem(ItemResponseDto itemResponseDto);
 }

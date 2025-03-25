@@ -1,10 +1,18 @@
 spring:
   jpa:
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+        connection:
+          read_only: false
     spring.sql.init.mode: always
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/shareit
+    username: shareit
+    password: shareit
 
 logging:
   level:
@@ -16,9 +24,3 @@ logging:
           jpa.JpaTransactionManager: DEBUG
         transaction: INFO
         transaction.interceptor: TRACE
-
-# TODO Append connection to DB
-#spring.datasource.driverClassName
-#spring.datasource.url
-#spring.datasource.username
-#spring.datasource.password
