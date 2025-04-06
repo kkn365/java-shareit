@@ -1,0 +1,34 @@
+server:
+  port: 9090
+
+spring:
+  config:
+    activate.on-profile: test
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:h2:file:./db/shareit-test
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+
+logging:
+  level:
+    org:
+      zalando.logbook: TRACE
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: DEBUG
+        transaction: INFO
+        transaction.interceptor: TRACE
+      hibernate:
+        SQL: DEBUG
+        type.descriptor.sql.BasicBinder: TRACE
