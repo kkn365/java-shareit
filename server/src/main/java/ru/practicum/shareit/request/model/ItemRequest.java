@@ -46,7 +46,7 @@ public class ItemRequest {
 
     private LocalDateTime created;
 
-    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
     private List<Item> items = new ArrayList<>();
 }

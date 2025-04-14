@@ -41,30 +41,38 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    ItemResponseDto updateItem(
+    ResponseEntity<ItemResponseDto> updateItem(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long itemId,
             @RequestBody ItemUpdateDto item
     ) {
-        return itemService.updateItem(userId, itemId, item);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemService.updateItem(userId, itemId, item));
     }
 
     @GetMapping("/{itemId}")
-    ItemResponseDto getItemById(
+    ResponseEntity<ItemResponseDto> getItemById(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long itemId
     ) {
-        return itemService.getItem(userId, itemId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemService.getItem(userId, itemId));
     }
 
     @GetMapping
-    Collection<ItemResponseDto> getAllItemsFromUser(@RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemService.getAllItemsFromUser(userId);
+    ResponseEntity<Collection<ItemResponseDto>> getAllItemsFromUser(@RequestHeader(USER_ID_HEADER) Long userId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemService.getAllItemsFromUser(userId));
     }
 
     @GetMapping("/search")
-    Collection<ItemResponseDto> searchItems(@RequestParam String text) {
-        return itemService.getAllItemsWithSearch(text);
+    ResponseEntity<Collection<ItemResponseDto>> searchItems(@RequestParam String text) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemService.getAllItemsWithSearch(text));
     }
 
     @PostMapping("{itemId}/comment")

@@ -40,35 +40,43 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    BookingResponseDto updateBookingStatus(
+    ResponseEntity<BookingResponseDto> updateBookingStatus(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long bookingId,
             @RequestParam Boolean approved
     ) {
-        return bookingService.updateBookingStatus(userId, bookingId, approved);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(bookingService.updateBookingStatus(userId, bookingId, approved));
     }
 
     @GetMapping("/{bookingId}")
-    BookingResponseDto getBookById(
+    ResponseEntity<BookingResponseDto> getBookById(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long bookingId
     ) {
-        return bookingService.getBookingById(userId, bookingId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(bookingService.getBookingById(userId, bookingId));
     }
 
     @GetMapping("/owner")
-    Collection<BookingResponseDto> getItemsBookingsListForCurrentUser(
+    ResponseEntity<Collection<BookingResponseDto>> getItemsBookingsListForCurrentUser(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @RequestParam(required = false, defaultValue = DEFAULT_SEARCH_VALUE) BookingState state
     ) {
-        return bookingService.getItemsBookingsListForCurrentUser(userId, state);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(bookingService.getItemsBookingsListForCurrentUser(userId, state));
     }
 
     @GetMapping
-    Collection<BookingResponseDto> getBookingsListForCurrentUser(
+    ResponseEntity<Collection<BookingResponseDto>> getBookingsListForCurrentUser(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @RequestParam(required = false, defaultValue = DEFAULT_SEARCH_VALUE) BookingState state
     ) {
-        return bookingService.getBookingsListForCurrentUser(userId, state);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(bookingService.getBookingsListForCurrentUser(userId, state));
     }
 }

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.request.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,28 +26,36 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    ItemRequestResponseDto createItemRequest(
+    ResponseEntity<ItemRequestResponseDto> createItemRequest(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @RequestBody ItemRequestCreateDto itemRequestCreateDto
     ) {
-        return itemRequestService.createItemRequest(userId, itemRequestCreateDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(itemRequestService.createItemRequest(userId, itemRequestCreateDto));
     }
 
     @GetMapping
-    Collection<ItemRequestResponseDto> getOwnItemRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemRequestService.getOwnItemRequests(userId);
+    ResponseEntity<Collection<ItemRequestResponseDto>> getOwnItemRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemRequestService.getOwnItemRequests(userId));
     }
 
     @GetMapping("/all")
-    Collection<ItemRequestResponseDto> getAllItemRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
-        return itemRequestService.getAllRequests(userId);
+    ResponseEntity<Collection<ItemRequestResponseDto>> getAllItemRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemRequestService.getAllRequests(userId));
     }
 
     @GetMapping("/{requestId}")
-    ItemRequestResponseDto getItemRequest(
+    ResponseEntity<ItemRequestResponseDto> getItemRequest(
             @RequestHeader(USER_ID_HEADER) Long userId,
             @PathVariable Long requestId
     ) {
-        return itemRequestService.getRequestById(userId, requestId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(itemRequestService.getRequestById(userId, requestId));
     }
 }

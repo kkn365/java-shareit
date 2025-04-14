@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
@@ -22,9 +23,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
-import ru.practicum.shareit.request.mapper.ItemRequestMapper;
-import ru.practicum.shareit.request.service.ItemRequestService;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserResponseMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -46,23 +45,21 @@ public class ItemServiceImpl implements ItemService {
     private final CommentResponseMapper commentResponseMapper;
     private final ItemResponseMapper itemResponseMapper;
     private final UserResponseMapper userResponseMapper;
-    private final ItemRequestService itemRequestService;
-    private final ItemRequestMapper itemRequestMapper;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
     public ItemResponseDto createItem(Long userId, ItemCreateDto item) {
         final User owner = userResponseMapper.toUser(userService.getUser(userId));
-        final Long requestId = item.getRequestId();
-        final ItemRequestResponseDto request = requestId == null ? null :
-                itemRequestService.getRequestById(userId, item.getRequestId());
         final Item newItem = Item.builder()
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(owner)
-                .request(request == null ? null : itemRequestMapper.toItemRequest(request))
                 .build();
+        if (item.getRequestId() != null) {
+            newItem.setRequest(itemRequestRepository.findById(item.getRequestId()).orElse(null));
+        }
         final Item addedItem = itemRepository.save(newItem);
         return itemResponseMapper.toItemResponseDto(addedItem);
     }
@@ -70,21 +67,22 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto itemData) {
-        final User owner = userResponseMapper.toUser(userService.getUser(userId));
-        final ItemResponseDto currentItem = getItem(userId, itemId);
-        final String incomingItemName = itemData.getName();
-        final String currentItemName = currentItem.getName();
-        final String incomingItemDesc = itemData.getDescription();
-        final String currentItemDesc = currentItem.getDescription();
-        final Item updatedItem = Item.builder()
-                .id(itemId)
-                .name(incomingItemName == null || incomingItemName.isEmpty() ? currentItemName : incomingItemName)
-                .description(incomingItemDesc == null || incomingItemDesc.isEmpty() ? currentItemDesc : incomingItemDesc)
-                .available(itemData.getAvailable() == null ? currentItem.getAvailable()
-                        : itemData.getAvailable())
-                .owner(owner)
-                .build();
-        itemRepository.save(updatedItem);
+        final Optional<Item> currentItem = itemRepository.findById(itemId);
+        if (currentItem.isEmpty()) {
+            final String errorMessage = String.format("The item with id=%d not fount in the database.", itemId);
+            log.warn(errorMessage);
+            throw new NotFoundException(errorMessage);
+        }
+        Item item = currentItem.get();
+        if (!item.getOwner().getId().equals(userId)) {
+            final String message = "You cannot update the data of items that do not belong to you.";
+            log.warn(message);
+            throw new ForbiddenException(message);
+        }
+        item.setName(itemData.getName() == null ? item.getName() : itemData.getName());
+        item.setDescription(itemData.getDescription() == null ? item.getDescription() : itemData.getDescription());
+        item.setAvailable(itemData.getAvailable() == null ? item.getAvailable() : itemData.getAvailable());
+        final Item updatedItem = itemRepository.save(item);
         return itemResponseMapper.toItemResponseDto(updatedItem);
     }
 
@@ -97,6 +95,10 @@ public class ItemServiceImpl implements ItemService {
             final String errorMessage = String.format("The item with id=%d not fount in the database.", itemId);
             log.warn(errorMessage);
             throw new NotFoundException(errorMessage);
+        }
+        Collection<Comment> comments = commentRepository.findAllByItemId(itemId);
+        if (!comments.isEmpty()) {
+            currentItem.get().setComments(comments.stream().toList());
         }
         return itemResponseMapper.toItemResponseDto(currentItem.get());
     }
@@ -141,7 +143,8 @@ public class ItemServiceImpl implements ItemService {
     public CommentResponseDto createComment(Long userId, Long itemId, CommentCreateDto commentCreateDto) {
         final User user = userResponseMapper.toUser(userService.getUser(userId));
         Collection<Booking> bookings = bookingRepository.findAllByItemIdAndBookerId(itemId, userId);
-        if (bookings.isEmpty() || !bookings.stream().findFirst().get().getStatus().equals(BookingStatus.APPROVED) ||
+        if (bookings.isEmpty() ||
+            !bookings.stream().findFirst().get().getStatus().equals(BookingStatus.APPROVED) ||
             bookings.stream().findFirst().get().getEnd().isAfter(LocalDateTime.now())) {
             final String message = "You cannot leave a comment if you have not booked.";
             log.warn(message);
