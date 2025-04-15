@@ -19,10 +19,9 @@ spring:
 logging:
   level:
     org:
-      zalando.logbook: TRACE
       springframework:
         orm:
           jpa: INFO
-          jpa.JpaTransactionManager: DEBUG
+          jpa.JpaTransactionManager: INFO
         transaction: INFO
-        transaction.interceptor: TRACE
+        transaction.interceptor: INFO

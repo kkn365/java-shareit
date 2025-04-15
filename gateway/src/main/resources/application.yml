@@ -1,8 +1,6 @@
 logging:
   level:
     org.springframework.web.client.RestTemplate: DEBUG
-    #org.apache.http: DEBUG
-    #httpclient.wire: DEBUG
 
 server:
   port: 8080

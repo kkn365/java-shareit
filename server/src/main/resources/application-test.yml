@@ -22,13 +22,12 @@ spring:
 logging:
   level:
     org:
-      zalando.logbook: TRACE
       springframework:
         orm:
           jpa: INFO
-          jpa.JpaTransactionManager: DEBUG
+          jpa.JpaTransactionManager: INFO
         transaction: INFO
-        transaction.interceptor: TRACE
+        transaction.interceptor: INFO
       hibernate:
-        SQL: DEBUG
-        type.descriptor.sql.BasicBinder: TRACE
+        SQL: INFO
+        type.descriptor.sql.BasicBinder: INFO
