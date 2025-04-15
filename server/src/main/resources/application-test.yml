@@ -1,0 +1,33 @@
+server:
+  port: 9090
+
+spring:
+  config:
+    activate.on-profile: test
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: jdbc:h2:file:./db/shareit-test
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa: INFO
+          jpa.JpaTransactionManager: INFO
+        transaction: INFO
+        transaction.interceptor: INFO
+      hibernate:
+        SQL: INFO
+        type.descriptor.sql.BasicBinder: INFO
